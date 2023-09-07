@@ -12,6 +12,8 @@ import (
 	"github.com/go-chi/chi/v5"
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/joho/godotenv"
+
+	handlers "go-api/handlers"
 )
 
 var (
@@ -66,7 +68,17 @@ func (server *Server) MountHandlers() {
 		r.Post("/", server.AddTodo)
 	})
 
+	userRouter := chi.NewRouter()
+	userRouter.Post("/login", handlers.LoginUser)
+	userRouter.Post("/signup", handlers.CreateUser)
+	userRouter.Group(func(r chi.Router) {
+		r.Get("/{id}", handlers.GetUser)
+		r.Post("/{id}", handlers.UpdateUser)
+		r.Delete("/{id}", handlers.DeleteUser)
+	})
+
 	server.Router.Mount("/todos", todosRouter)
+	server.Router.Mount("/user", userRouter)
 }
 
 func main() {
