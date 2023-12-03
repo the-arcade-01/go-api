@@ -10,10 +10,9 @@ import (
 	"time"
 
 	"github.com/go-chi/chi/v5"
+	"github.com/go-chi/chi/v5/middleware"
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/joho/godotenv"
-
-	handlers "go-api/handlers"
 )
 
 var (
@@ -60,6 +59,7 @@ func Greet(w http.ResponseWriter, r *http.Request) {
 }
 
 func (server *Server) MountHandlers() {
+	server.Router.Use(middleware.Logger)
 	server.Router.Get("/greet", Greet)
 
 	todosRouter := chi.NewRouter()
@@ -68,17 +68,7 @@ func (server *Server) MountHandlers() {
 		r.Post("/", server.AddTodo)
 	})
 
-	userRouter := chi.NewRouter()
-	userRouter.Post("/login", handlers.LoginUser)
-	userRouter.Post("/signup", handlers.CreateUser)
-	userRouter.Group(func(r chi.Router) {
-		r.Get("/{id}", handlers.GetUser)
-		r.Post("/{id}", handlers.UpdateUser)
-		r.Delete("/{id}", handlers.DeleteUser)
-	})
-
 	server.Router.Mount("/todos", todosRouter)
-	server.Router.Mount("/user", userRouter)
 }
 
 func main() {
