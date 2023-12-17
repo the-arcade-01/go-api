@@ -15,9 +15,7 @@ import (
 	"github.com/joho/godotenv"
 )
 
-var (
-	DATABASE_URL, DB_DRIVER, PORT string
-)
+var DATABASE_URL, DB_DRIVER, PORT string
 
 func init() {
 	err := godotenv.Load()
